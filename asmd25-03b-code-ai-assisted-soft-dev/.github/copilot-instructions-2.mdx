@@ -1,0 +1,67 @@
+# Copilot Instructions — asmd-ai-assisted-code
+
+## Project Context
+
+This is an **educational Java lab** for exploring LLM integration via `langchain4j`.  
+The build system is **Gradle** (Kotlin DSL); all application and test code is **Java**.
+
+Before generating any code, read:
+
+- [ARCHITECTURE.md](../ARCHITECTURE.md) — package map, design principles, LLM patterns
+- [PRODUCT.md](../PRODUCT.md) — vision, objectives, user personas, success criteria
+- [CONTRIBUTING.md](../CONTRIBUTING.md) — code style, test conventions, dependency rules
+
+---
+
+## Always-On Rules
+
+### Java
+- Interface first, then implementation.
+- Constructor injection only; no static state.
+- `final` on implementation classes; `private final` on all fields.
+- `Objects.requireNonNull` on every constructor parameter.
+- No wildcard imports. 4-space indentation.
+- Wrap every `ChatModel.chat(...)` in a retry loop; throw `IllegalStateException` after `MAX_RETRIES`.
+- Prompt classes implement a `*Prompt` interface with a single `toPromptString()` method.
+- Decode LLM JSON via `JsonCodec`; never instantiate `new Gson()` in application code.
+
+### Gradle
+- One `dependency` per line.
+- Extract shared version numbers as `val`s at the top of `build.gradle.kts`.
+- Test-only deps get `testImplementation` or `testRuntimeOnly`. Do not duplicate existing library functionality.
+
+### Testing
+- JUnit 5 + Mockito. Pattern: Arrange / Act / Assert (AAA).
+- Method names: `should<Expected>When<Condition>`.
+- Mock `ChatModel` / `EmbeddingModel`; never call real Ollama or Gemini in unit tests.
+- Every test must be independent — no shared mutable state.
+
+---
+
+## File-Specific Instructions (auto-applied)
+
+| Files matched | Instructions file |
+|---|---|
+| `**/*.java` | [.github/instructions/java.instructions.md](.github/instructions/java.instructions.md) |
+| `build.gradle.kts`, `buildSrc/**` | [.github/instructions/gradle.instructions.md](.github/instructions/gradle.instructions.md) |
+
+---
+
+## Agents
+
+| Agent | Purpose | File |
+|---|---|---|
+| **TDD Agent** | Red → Green → Refactor cycle for Java code | [.github/agents/tdd.agent.md](.github/agents/tdd.agent.md) |
+
+Use the TDD Agent (`@tdd`) whenever you are asked to implement a new feature, fix a bug, or add tests.
+
+---
+
+## Anti-patterns (never do these)
+
+- Do not call `new Gson()` directly in application code.
+- Do not hardcode model names or API keys in production classes.
+- Do not write production code before a failing test exists (unless it is a standalone demo in `basics/`).
+- Do not add dependencies that duplicate existing functionality (e.g., no Jackson when Gson is present).
+- Do not use `import java.util.*` or any other wildcard import.
+- Do not share mutable state between test methods.

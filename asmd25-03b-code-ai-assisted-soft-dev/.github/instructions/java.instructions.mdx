@@ -1,0 +1,33 @@
+---
+applyTo: "**/*.java"
+---
+
+# Java File Instructions
+
+## Package & Structure Rules
+- Every new class or interface belongs inside `it.unibo` (or a sub-package).
+- One top-level type per file; file name **must** match the class/interface name.
+- Declare the interface **before** writing any concrete class. If an interface does not yet exist for the abstraction, create it first.
+
+## Code Conventions
+- Use `final` for implementation classes unless inheritance is explicitly designed for.
+- Use `private final` fields; inject all dependencies through the constructor.
+- Validate constructor arguments: `Objects.requireNonNull(arg, "arg must not be null")`.
+- Use `List.of(...)`, `Map.of(...)`, etc. for immutable collections; never return mutable internal state.
+- No wildcard imports (`import java.util.*` is forbidden). List every import explicitly.
+- Indentation: **4 spaces**. Never use tabs.
+
+## LLM-Specific Patterns
+- Do **not** hardcode model names or API keys in production classes — accept them as constructor parameters or read from environment variables.
+- Wrap every `ChatModel.chat(...)` call inside a retry loop: catch `Exception`, log the attempt, and throw `IllegalStateException` after `MAX_RETRIES` exhausted.
+- Prompt classes must implement a dedicated prompt interface (e.g., `StoryPrompt`) with a single `toPromptString()` method.
+- Decode LLM JSON responses with `JsonCodec`; never call `new Gson()` directly in application code.
+
+## Testing Companion Rules
+- For every new non-trivial class, create a corresponding test class under `src/test/java/` in the **same sub-package**.
+- Mock `ChatModel` and `EmbeddingModel` with Mockito; never call real Ollama or Gemini in unit tests.
+- Annotate test classes with `@ExtendWith(MockitoExtension.class)` when using Mockito.
+
+## Javadoc
+- Public interface methods **must** have a one-line Javadoc summary.
+- Implementation classes do not need Javadoc unless the logic is non-obvious.
