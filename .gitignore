@@ -1,1 +1,21 @@
+# macOS
 .DS_Store
+
+# IntelliJ / IDE
+.idea/
+*.iml
+
+# Scala / SBT / Metals / Bloop
+target/
+.bsp/
+.bloop/
+.metals/
+.scala-build/
+
+# Java / Gradle
+.gradle/
+build/
+out/
+
+# Logs
+*.log
