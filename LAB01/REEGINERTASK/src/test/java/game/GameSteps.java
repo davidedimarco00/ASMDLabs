@@ -1,4 +1,4 @@
-package oopExam;
+package game;
 
 import io.cucumber.java.en.*;
 
@@ -12,7 +12,7 @@ public class GameSteps {
         this.logic = new LogicImpl(size);
     }
 
-    @When("I hit position ({int},{int})")
+    @When("I hit position \\({int},{int}\\)")
     public void iHitPosition(int x, int y) {
         this.logic.hit(new Position(x, y));
     }
