@@ -1,0 +1,38 @@
+---
+applyTo: "build.gradle.kts,buildSrc/**/*.gradle.kts,buildSrc/**/*.kt"
+---
+
+# Gradle Build File Instructions
+
+## General Rules
+- All **source code** in this project is Java; do not add Kotlin source files under `src/main/` or `src/test/`.
+- The build script uses Gradle Kotlin DSL.
+- Do not change the `version` line; it drives downstream artifact naming.
+
+## Dependency Management
+- Declare one `dependency` per line inside the `dependencies { ... }` block.
+- Extract shared version numbers as `val`s **at the top of `build.gradle.kts`**:
+  ```kotlin
+  val langchain4jVersion = "1.11.0"
+  dependencies {
+      implementation("dev.langchain4j:langchain4j:$langchain4jVersion")
+      implementation("dev.langchain4j:langchain4j-ollama:$langchain4jVersion")
+  }
+  ```
+- Scope test-only dependencies with `testImplementation` or `testRuntimeOnly`.
+- Do **not** add a dependency that duplicates existing functionality (e.g., Jackson when Gson is present).
+- Add a comment above each new dependency block explaining its purpose.
+
+## Plugin Files
+- Add a comment above each plugin explaining what it does.
+- Keep the plugin set minimal.
+
+## Known Dependency Facts
+- JUnit 5 test execution is supported natively; ensure `useJUnitPlatform()` is present in the `test` task.
+- `com.github.haifengl:smile-plot` is a Java artifact.
+- `com.google.code.gson:gson` is used by `JsonCodec`; do not replace it.
+
+## Formatting
+- Use 4-space indentation inside blocks.
+- Keep all dependencies grouped logically.
+- End the file with a trailing newline.
