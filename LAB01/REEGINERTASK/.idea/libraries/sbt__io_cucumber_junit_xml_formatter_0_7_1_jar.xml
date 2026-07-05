@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="sbt: io.cucumber:junit-xml-formatter:0.7.1:jar" type="java-imported" external-system-id="SBT">
+    <properties groupId="io.cucumber" artifactId="junit-xml-formatter" version="0.7.1" baseVersion="0.7.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/io/cucumber/junit-xml-formatter/0.7.1/junit-xml-formatter-0.7.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/io/cucumber/junit-xml-formatter/0.7.1/junit-xml-formatter-0.7.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
