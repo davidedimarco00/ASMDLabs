@@ -1,22 +1,31 @@
 Feature: Game logic
   The game should add marks, start moving when hitting a neighbour, and end when a mark exits the board.
 
-  Scenario: Board starts not over
+  Background:
     Given I have a game board of size 5
-    Then the game should not be over
 
-  Scenario: Placing a first mark does not end the game
-    Given I have a game board of size 5
-    When I hit position (2,2)
-    Then the game should not be over
+  Scenario: Placing multiple marks assigns increasing numbers
+    When I hit position (1,1)
+    And I hit position (3,3)
+    Then position (1,1) should have mark 1
+    And position (3,3) should have mark 2
+    And the game should not be over
 
-  Scenario: Trigger movement by hitting a neighbouring cell
-    Given I have a game board of size 5
+  Scenario: Movement shifts marks on neighbour hit
     When I hit position (2,2)
     And I hit position (2,2)
-    Then the game should not be over
+    Then position (3,1) should have mark 1
+    And position (2,2) should be empty
+    And the game should not be over
 
-  Scenario: Game ends when a mark moves off the board
+  Scenario: Hitting non-neighbour does not trigger movement
+    When I hit position (0,0)
+    And I hit position (4,4)
+    Then position (0,0) should have mark 1
+    And position (4,4) should have mark 2
+    And the game should not be over
+
+  Scenario: Movement can end the game on small board
     Given I have a game board of size 2
     When I hit position (1,1)
     And I hit position (1,1)
