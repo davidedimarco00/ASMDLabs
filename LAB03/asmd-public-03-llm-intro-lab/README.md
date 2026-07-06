@@ -18,7 +18,7 @@ We will also leverage gemini as a reference for state of the art LLMs.
 - Download the required models:
 ```bash
 # Small LLM model
-ollama pull smollm2:360m
+ollama pull smollm2:135m
 
 # Large embedding model
 ollama pull mxbai-embed-large
@@ -75,3 +75,10 @@ The project is organised into several sections:
         - `controller.formatter` — `BoardFormatter`, `TextBoardFormatter` — board-to-text formatting for prompts
     - `App` — Entry point (human vs. AI)
 
+### Laboratory
+
+Look at the package `e1`. There is a README that describes the project and what you should do.
+The main goals here are:
+a) Experiment with prompt engineering in a coding environment
+b) Be practical with `langchain4j`
+c) Try different models and compare their performance and output quality
