@@ -22,7 +22,7 @@ public final class StoryApp {
             .temperature(1.0)
             .build();
         final ChatModel chatModelWithGemini = GoogleAiGeminiChatModel.builder()
-            .apiKey(System.getenv("GEMINI_AI_KEY"))
+            .apiKey(System.getenv("API_KEY"))
             .modelName("gemini-3.1-flash-lite-preview")
             .build();
         final Story story = new StoryImpl(
