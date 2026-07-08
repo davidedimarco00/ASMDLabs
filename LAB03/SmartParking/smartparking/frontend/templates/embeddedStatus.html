@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stato Dispositivi Embedded</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .slot-counter {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #218838;
+            background: #e9fbe5;
+            border-radius: 8px;
+            padding: 8px 16px;
+            margin-right: 10px;
+        }
+        .refresh-indicator {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .refresh-indicator.active {
+            background-color: #4CAF50;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .device-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+            transition: transform 0.2s;
+        }
+        .device-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(102,126,234,0.15);
+        }
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .device-id {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        .status-badge {
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .status-available {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-unavailable {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status-unknown {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            padding: 10px 14px;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        @media (max-width: 600px) {
+            .devices-grid {
+                grid-template-columns: 1fr;
+            }
+            .back-btn {
+                top: 10px;
+                left: 10px;
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<a href="/dashboard" class="btn btn-light back-btn" aria-label="Torna alla dashboard" title="Torna alla dashboard">
+    <i class="bi bi-arrow-left-circle me-2"></i>
+    <span class="d-none d-sm-inline">Dashboard</span>
+</a>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-white text-center py-4">
+            <h1 class="mb-0">
+                <i class="bi bi-cpu text-primary"></i>
+                Stato Dispositivi Embedded
+            </h1>
+            <p class="text-muted mb-0">Gestisci slot, barriere e dispositivi embedded</p>
+        </div>
+        <div class="card-body">
+            <div class="header-actions mb-3">
+                <span id="slotCounter" class="slot-counter">Slot: ...</span>
+                <button class="btn btn-success" onclick="openEntryBarrier()">
+                    <i class="bi bi-door-open"></i> Apri Ingresso
+                </button>
+                <button class="btn btn-danger" onclick="openExitBarrier()">
+                    <i class="bi bi-door-closed"></i> Apri Uscita
+                </button>
+                <button class="btn btn-primary" onclick="showAddCarPopup()">
+                    <i class="bi bi-plus-circle"></i> Nuova Auto
+                </button>
+                <button class="btn btn-warning" onclick="showSetTariffPopup()">
+                    <i class="bi bi-cash-coin"></i> Setta Tariffa
+                </button>
+                <span class="ms-3">
+                    <span class="refresh-indicator" id="refreshIndicator"></span>
+                    <span id="lastUpdate" class="text-secondary">Caricamento in corso...</span>
+                </span>
+            </div>
+            <div id="errorMessage" class="error" style="display: none;"></div>
+            <div id="devicesContainer" class="loading">
+                Caricamento dispositivi...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nuova Auto -->
+<div class="modal fade" id="addCarModal" tabindex="-1" aria-labelledby="addCarModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCarModalLabel">
+                    <i class="bi bi-car-front-fill text-success"></i>
+                    Nuova Auto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+            </div>
+            <div class="modal-body">
+                <input id="carPlateInput" type="text" class="form-control mb-3" placeholder="Inserisci targa">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-primary" onclick="addCar()">
+                    <i class="bi bi-check-circle"></i> OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Imposta Tariffa -->
+<div class="modal fade" id="setTariffModal" tabindex="-1" aria-labelledby="setTariffModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="setTariffModalLabel">
+                    <i class="bi bi-cash-coin text-warning"></i>
+                    Imposta Tariffa
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+            </div>
+            <div class="modal-body">
+                <select id="tariffChange" class="form-select mb-2">
+                    <option value="EUR">EUR (€)</option>
+                    <option value="USD">USD ($)</option>
+                </select>
+                <input id="tariffHourFee" type="number" step="0.01" class="form-control mb-2" placeholder="Tariffa oraria">
+                <input id="tariffDailyFee" type="number" step="0.01" class="form-control mb-2" placeholder="Tariffa giornaliera">
+                <input id="tariffThresholdHours" type="number" class="form-control mb-2" placeholder="Soglia ore">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-primary" onclick="setTariff()">
+                    <i class="bi bi-check-circle"></i> OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let updateInterval;
+
+    window.onload = function() {
+        loadDeviceStatus();
+        loadSlotCounter();
+        updateInterval = setInterval(() => {
+            loadDeviceStatus();
+            loadSlotCounter();
+        }, 10000);
+    };
+
+    window.onbeforeunload = function() {
+        if (updateInterval) {
+            clearInterval(updateInterval);
+        }
+    };
+
+    async function loadSlotCounter() {
+        try {
+            const response = await fetch('/api/parkmanagement/slots');
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('slotCounter').textContent =
+                    `Slot disponibili: ${data.availableSlots} / ${data.totalSlots}`;
+            }
+        } catch (e) {
+            document.getElementById('slotCounter').textContent = 'Slot: errore';
+        }
+    }
+
+    async function openEntryBarrier() {
+        try {
+            const response = await fetch('/api/parkmanagement/openEntryBarrier', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+            if (response.ok) {
+                showNotification('Barriera ingresso aperta!', 'success');
+            } else {
+                showNotification('Errore apertura ingresso', 'danger');
+            }
+        } catch (e) {
+            showNotification('Errore di comunicazione', 'danger');
+        }
+    }
+
+    async function openExitBarrier() {
+        try {
+            const response = await fetch('/api/parkmanagement/openExitBarrier', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+            if (response.ok) {
+                showNotification('Barriera uscita aperta!', 'success');
+            } else {
+                showNotification('Errore apertura uscita', 'danger');
+            }
+        } catch (e) {
+            showNotification('Errore di comunicazione', 'danger');
+        }
+    }
+
+    async function loadDeviceStatus() {
+        const indicator = document.getElementById('refreshIndicator');
+        indicator.classList.add('active');
+        try {
+            const response = await fetch('/api/parkmanagement/status');
+            if (response.ok) {
+                const data = await response.json();
+                displayDevices(data.devices);
+                updateLastUpdateTime();
+                hideError();
+            } else {
+                throw new Error('Errore nel caricamento dello stato dei dispositivi');
+            }
+        } catch (error) {
+            showError('Errore di comunicazione: ' + error.message);
+        } finally {
+            indicator.classList.remove('active');
+        }
+    }
+
+    function displayDevices(devices) {
+        const container = document.getElementById('devicesContainer');
+        if (!devices || devices.length === 0) {
+            container.className = 'loading';
+            container.innerHTML = '<div class="loading">Nessun dispositivo trovato</div>';
+            return;
+        }
+        container.className = 'devices-grid';
+        container.innerHTML = devices.map(device => `
+            <div class="device-card">
+                <div class="device-header">
+                    <div class="device-id"><i class="bi bi-cpu me-2"></i>${device.deviceId}</div>
+                    <span class="status-badge ${getStatusClass(device.status)}">
+                        ${getStatusText(device.status)}
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function getStatusClass(status) {
+        switch (status?.toLowerCase()) {
+            case 'available': return 'status-available';
+            case 'unavailable': return 'status-unavailable';
+            default: return 'status-unknown';
+        }
+    }
+
+    function getStatusText(status) {
+        switch (status?.toLowerCase()) {
+            case 'available': return 'Disponibile';
+            case 'unavailable': return 'Non disponibile';
+            default: return 'Sconosciuto';
+        }
+    }
+
+    function updateLastUpdateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('it-IT');
+        document.getElementById('lastUpdate').textContent = `Ultimo aggiornamento: ${timeString}`;
+    }
+
+    function showError(message) {
+        const errorDiv = document.getElementById('errorMessage');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+
+    function hideError() {
+        document.getElementById('errorMessage').style.display = 'none';
+    }
+
+    function showAddCarPopup() {
+        document.getElementById('carPlateInput').value = '';
+        const modal = new bootstrap.Modal(document.getElementById('addCarModal'));
+        modal.show();
+    }
+
+    async function addCar() {
+    const plate = document.getElementById('carPlateInput').value.trim();
+    if (!plate) {
+        showNotification('Inserisci una targa valida', 'warning');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/parkmanagement/addCar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plate })
+        });
+
+        const data = await response.json();  
+
+        if (response.ok) {
+            if (data.map && data.map.status === "already exists") {
+                showNotification("Errore: auto già presente", "danger");
+            } else {
+                showNotification("Auto aggiunta con successo!", "success");
+                bootstrap.Modal.getInstance(document.getElementById('addCarModal')).hide();
+                loadSlotCounter();
+            }
+
+        } else {
+            showNotification('Errore: ' + (data.error || 'Impossibile aggiungere auto'), 'danger');
+        }
+
+    } catch (e) {
+        showNotification('Errore di comunicazione', 'danger');
+    }
+}
+
+    function showNotification(message, type) {
+        const toastHTML = `
+            <div class="toast align-items-center text-bg-${type} border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', toastHTML);
+        const toastElement = document.querySelector('.toast:last-child');
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+        toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove());
+    }
+
+function showSetTariffPopup() {
+    document.getElementById('tariffChange').value = 'EUR';
+    document.getElementById('tariffHourFee').value = '';
+    document.getElementById('tariffDailyFee').value = '';
+    document.getElementById('tariffThresholdHours').value = '';
+    const modal = new bootstrap.Modal(document.getElementById('setTariffModal'));
+    modal.show();
+}
+
+async function setTariff() {
+    const change = document.getElementById('tariffChange').value;
+    const hourFee = parseFloat(document.getElementById('tariffHourFee').value);
+    const dailyFee = parseFloat(document.getElementById('tariffDailyFee').value);
+    const thresholdHours = parseInt(document.getElementById('tariffThresholdHours').value);
+
+    if (!change || isNaN(hourFee) || isNaN(dailyFee) || isNaN(thresholdHours)) {
+        showNotification('Compila tutti i campi correttamente', 'warning');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/payment/setTariff', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ change, hourFee, dailyFee, thresholdHours })
+        });
+        if (response.ok) {
+            showNotification('Tariffa aggiornata!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('setTariffModal')).hide();
+        } else {
+            const err = await response.json();
+            showNotification('Errore: ' + (err.error || 'Impossibile aggiornare tariffa'), 'danger');
+        }
+    } catch (e) {
+        showNotification('Errore di comunicazione', 'danger');
+    }
+}
+
+
+</script>
+</body>
+</html>

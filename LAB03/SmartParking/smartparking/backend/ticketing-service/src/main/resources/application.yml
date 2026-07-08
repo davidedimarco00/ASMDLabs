@@ -1,0 +1,36 @@
+server:
+  port: ${TICKETING_SERVICE_INSTANCE_PORT:8084}
+
+spring:
+  application:
+    name: ticketing-service
+  data:
+    mongodb:
+      uri: ${TICKETING_MONGODB_URI:mongodb://localhost:27020/ticketingservicedb}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://service-discovery:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: ${TICKETING_SERVICE_INSTANCE_HOSTNAME:ticketing-service}
+    prefer-ip-address: false
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  server:
+    port: ${TICKETING_SERVICE_INSTANCE_PORT:}
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name:ticketing-service}

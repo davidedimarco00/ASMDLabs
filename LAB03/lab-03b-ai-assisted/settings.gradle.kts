@@ -1,0 +1,1 @@
+rootProject.name = "asmd-public-03b-ai-assisted-lab"

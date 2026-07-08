@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Smart Parking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .report-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .report-item:hover {
+            background-color: #f8f9fa;
+        }
+        .report-item:last-child {
+            border-bottom: none;
+        }
+        .new-report-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+            font-size: 30px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .new-report-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.7);
+        }
+        .modal-content {
+            border-radius: 15px;
+        }
+        .badge-date {
+            font-size: 1rem;
+            padding: 8px 15px;
+            border-radius: 10px;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 50px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6c757d;
+        }
+        .empty-state i {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1100; /* sopra le card e in alto rispetto al FAB */
+        padding: 10px 14px;
+        border-radius: 50px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    </style>
+</head>
+<body>
+<a href="/dashboard" class="btn btn-light back-btn" aria-label="Torna alla dashboard" title="Torna alla dashboard">
+    <i class="bi bi-arrow-left-circle me-2"></i>
+    <span class="d-none d-sm-inline">Dashboard</span>
+</a>
+<div class="container">
+    <div class="card">
+        <div class="card-header bg-white text-center py-4">
+            <h1 class="mb-0">
+                <i class="bi bi-graph-up-arrow text-primary"></i>
+                Analytics Reports
+            </h1>
+            <p class="text-muted mb-0">Visualizza e genera report analitici</p>
+        </div>
+        <div class="card-body p-0">
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Caricamento report...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state d-none" id="emptyState">
+                <i class="bi bi-inbox"></i>
+                <h3>Nessun report disponibile</h3>
+                <p>Clicca sul pulsante <strong>+</strong> per generare il primo report</p>
+            </div>
+
+            <!-- Reports List -->
+            <div id="reportsList"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<button class="new-report-btn" data-bs-toggle="modal" data-bs-target="#newReportModal" title="Genera Nuovo Report">
+    <i class="bi bi-plus"></i>
+</button>
+
+<!-- Modal Nuovo Report -->
+<div class="modal fade" id="newReportModal" tabindex="-1" aria-labelledby="newReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newReportModalLabel">
+                    <i class="bi bi-calendar-plus text-primary"></i>
+                    Genera Nuovo Report
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newReportForm">
+                    <div class="mb-3">
+                        <label for="reportDate" class="form-label">Data di Riferimento</label>
+                        <input type="date" class="form-control" id="reportDate" required>
+                        <div class="form-text">Seleziona la data per cui generare il report analitico</div>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <small>Il report includerà tutti i dati del giorno selezionato</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-primary" id="generateReportBtn">
+                    <i class="bi bi-gear-fill"></i>
+                    Genera Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Usa le API Flask invece di chiamare direttamente il gateway
+    const API_BASE_URL = '/api/analytics';
+
+    // Carica tutti i report - usa endpoint Flask
+    async function loadReports() {
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const emptyState = document.getElementById('emptyState');
+        const reportsList = document.getElementById('reportsList');
+
+        loadingSpinner.style.display = 'block';
+        emptyState.classList.add('d-none');
+        reportsList.innerHTML = '';
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/reports`);
+
+            if (response.status === 401) {
+                window.location.href = '/';
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const reports = await response.json();
+            loadingSpinner.style.display = 'none';
+
+            if (reports.length === 0) {
+                emptyState.classList.remove('d-none');
+                return;
+            }
+
+            reports.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            reports.forEach(report => {
+                const reportItem = createReportItem(report);
+                reportsList.innerHTML += reportItem;
+            });
+
+            document.querySelectorAll('.report-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const reportDate = item.dataset.reportDate;
+                    viewReportDetails(reportDate);
+                });
+            });
+
+        } catch (error) {
+            console.error('Errore nel caricamento dei report:', error);
+            loadingSpinner.style.display = 'none';
+            reportsList.innerHTML = `
+                <div class="alert alert-danger m-3">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Errore nel caricamento dei report. Riprova più tardi.
+                </div>
+            `;
+        }
+    }
+
+    function createReportItem(report) {
+        const date = new Date(report.date);
+        const formattedDate = date.toLocaleDateString('it-IT', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        return `
+             <div class="report-item" data-report-date="${report.date}">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <i class="bi bi-file-earmark-bar-graph text-primary" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <div class="col">
+                        <h5 class="mb-1">Report del ${formattedDate}</h5>
+                    </div>
+                    <div class="col-auto">
+                        <span class="badge badge-date bg-primary">
+                            ${date.toLocaleDateString('it-IT')}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    // Imposta il valore massimo del campo data a ieri
+    document.addEventListener('DOMContentLoaded', () => {
+        loadReports();
+
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        const maxDate = yesterday.toISOString().split('T')[0];
+
+        document.getElementById('reportDate').value = maxDate;
+        document.getElementById('reportDate').max = maxDate;
+
+        document.getElementById('generateReportBtn').addEventListener('click', generateReport);
+    });
+
+    // Genera nuovo report - usa endpoint Flask GET /report/{date}
+    async function generateReport() {
+        const dateInput = document.getElementById('reportDate');
+        const selectedDate = dateInput.value;
+
+        if (!selectedDate) {
+            alert('Seleziona una data valida');
+            return;
+        }
+
+        const generateBtn = document.getElementById('generateReportBtn');
+        const originalText = generateBtn.innerHTML;
+
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generazione...';
+
+        try {
+            // Usa GET /report/{date} che genera o recupera il report
+            const response = await fetch(`${API_BASE_URL}/report/${selectedDate}`);
+
+            if (response.status === 401) {
+                window.location.href = '/';
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const newReport = await response.json();
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newReportModal'));
+            modal.hide();
+
+            showNotification('Report generato con successo!', 'success');
+
+            setTimeout(() => {
+                loadReports();
+            }, 500);
+
+        } catch (error) {
+            console.error('Errore nella generazione del report:', error);
+            showNotification('Errore nella generazione del report. Riprova più tardi.', 'danger');
+        } finally {
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = originalText;
+        }
+    }
+
+    // Visualizza dettagli report - naviga verso la pagina Flask
+    async function viewReportDetails(reportDate) {
+        // Non serve fare la chiamata API qui, passa solo la data alla pagina
+        window.location.href = `/reportviewer?date=${reportDate}`;
+    }
+
+    function showNotification(message, type) {
+        const toastHTML = `
+            <div class="toast align-items-center text-bg-${type} border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', toastHTML);
+        const toastElement = document.querySelector('.toast:last-child');
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+        toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove());
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+server:
+  port: ${ANALYTICS_SERVICE_INSTANCE_PORT:8085}
+
+spring:
+  application:
+    name: analytics-service
+  data:
+    mongodb:
+      uri: ${ANALYTICS_MONGODB_URI:mongodb://mongodb:27017/analytics_db}
+      database: analytics_db
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://service-discovery:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: ${ANALYTICS_SERVICE_INSTANCE_HOSTNAME:analytics-service}
+    prefer-ip-address: false
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  server:
+    port: 8085
+    servlet:
+      context-path: /
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+
+logging:
+  level:
+    com.smartparking.analyticsservice: DEBUG
+    org.springframework.data.mongodb: DEBUG

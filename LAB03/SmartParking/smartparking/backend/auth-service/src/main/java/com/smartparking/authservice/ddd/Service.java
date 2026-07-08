@@ -1,0 +1,5 @@
+package com.smartparking.authservice.ddd;
+
+public interface Service {
+
+}

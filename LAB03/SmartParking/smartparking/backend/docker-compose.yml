@@ -1,0 +1,318 @@
+services:
+  ##############################
+  # EUREKA SERVICE DISCOVERY   #
+  ##############################
+  service-discovery:
+    build: ./service-discovery
+    container_name: ${EUREKA_INSTANCE_HOSTNAME}
+    ports:
+      - "${EUREKA_INSTANCE_PORT}:${EUREKA_INSTANCE_PORT}"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=${EUREKA_CLIENT_REGISTER_WITH_EUREKA}
+      - EUREKA_CLIENT_FETCH_REGISTRY=${EUREKA_CLIENT_FETCH_REGISTRY}
+      - EUREKA_INSTANCE_HOSTNAME=${EUREKA_INSTANCE_HOSTNAME}
+      - EUREKA_INSTANCE_PORT=${EUREKA_INSTANCE_PORT}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+    healthcheck:
+      test: curl --fail http://localhost:${EUREKA_INSTANCE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+
+  #####################
+  # API GATEWAY       #
+  #####################
+  gateway:
+    build: ./gateway
+    container_name: ${API_GATEWAY_INSTANCE_HOSTNAME}
+    ports:
+      - "${API_GATEWAY_INSTANCE_PORT}:${API_GATEWAY_INSTANCE_PORT}"
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+      - EUREKA_INSTANCE_HOSTNAME=${API_GATEWAY_INSTANCE_HOSTNAME}
+      - EUREKA_INSTANCE_PORT=${API_GATEWAY_INSTANCE_PORT}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+    healthcheck:
+      test: curl --fail http://localhost:${API_GATEWAY_INSTANCE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+
+  #####################
+  # AUTH SERVICE      #
+  #####################
+  auth-service:
+    build: ./auth-service
+    container_name: ${AUTH_SERVICE_INSTANCE_HOSTNAME}
+    ports:
+      - "${AUTH_SERVICE_INSTANCE_PORT}:${AUTH_SERVICE_INSTANCE_PORT}"
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+      mongo-auth:
+        condition: service_started
+    environment:
+      - SPRING_DATA_MONGODB_URI=${AUTH_MONGODB_URI}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+    healthcheck:
+      test: curl --fail http://localhost:${AUTH_SERVICE_INSTANCE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-auth:
+    image: mongo
+    container_name: ${AUTH_MONGODB_HOST}
+    ports:
+      - "${AUTH_MONGODB_PORT}:${MONGODB_DEFAULT_PORT}"
+    volumes:
+      - mongo-auth-data:${MONGODB_VOLUME_PATH}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+
+
+  #####################
+  # PARKING SERVICE   #
+  #####################
+  parking-service:
+    build: ./parking-service
+    container_name: ${PARKING_SERVICE_INSTANCE_HOSTNAME}
+    ports:
+      - "${PARKING_SERVICE_INSTANCE_PORT}:${PARKING_SERVICE_INSTANCE_PORT}"
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+      mongo-parking:
+        condition: service_started
+    environment:
+      - SPRING_DATA_MONGODB_URI=${PARKING_MONGODB_URI}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+    healthcheck:
+      test: curl --fail http://localhost:${PARKING_SERVICE_INSTANCE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-parking:
+    image: mongo
+    container_name: ${PARKING_MONGODB_HOST}
+    ports:
+      - "27018:${MONGODB_DEFAULT_PORT}"
+    volumes:
+      - mongo-parking-data:${MONGODB_VOLUME_PATH}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+
+
+  #####################
+  # PAYMENT SERVICE   #
+  #####################
+  payment-service:
+    build: ./payment-service
+    container_name: ${PAYMENT_SERVICE_INSTANCE_HOSTNAME}
+    ports:
+      - "${PAYMENT_SERVICE_INSTANCE_PORT}:${PAYMENT_SERVICE_INSTANCE_PORT}"
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+      mongo-payment:
+        condition: service_started
+    environment:
+      - SPRING_DATA_MONGODB_URI=${PAYMENT_MONGODB_URI}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+    healthcheck:
+      test: curl --fail http://localhost:${PAYMENT_SERVICE_INSTANCE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-payment:
+    image: mongo
+    container_name: ${PAYMENT_MONGODB_HOST}
+    ports:
+      - "27019:${MONGODB_DEFAULT_PORT}"
+    volumes:
+      - mongo-payment-data:${MONGODB_VOLUME_PATH}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+
+
+  ########################
+  # TICKETING SERVICE    #
+  ########################
+  ticketing-service:
+    build: ./ticketing-service
+    container_name: ${TICKETING_SERVICE_INSTANCE_HOSTNAME}
+    ports:
+      - "${TICKETING_SERVICE_INSTANCE_PORT}:${TICKETING_SERVICE_INSTANCE_PORT}"
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+      mongo-ticketing:
+        condition: service_started
+    environment:
+      - SPRING_DATA_MONGODB_URI=${TICKETING_MONGODB_URI}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+    healthcheck:
+      test: curl --fail http://localhost:${TICKETING_SERVICE_INSTANCE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-ticketing:
+    image: mongo
+    container_name: ${TICKETING_MONGODB_HOST}
+    ports:
+      - "27020:${MONGODB_DEFAULT_PORT}"
+    volumes:
+      - mongo-ticketing-data:${MONGODB_VOLUME_PATH}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+
+
+  ########################
+  # ANALYTICS SERVICE    #
+  ########################
+  analytics-service:
+    build: ./analytics-service
+    container_name: ${ANALYTICS_SERVICE_INSTANCE_HOSTNAME}
+    ports:
+      - "${ANALYTICS_SERVICE_INSTANCE_PORT}:${ANALYTICS_SERVICE_INSTANCE_PORT}"
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+      mongo-analytics:
+        condition: service_started
+    environment:
+      - SERVICE_NAME=analytics-service
+      - SERVICE_PORT=${ANALYTICS_SERVICE_INSTANCE_PORT}
+      - SPRING_DATA_MONGODB_URI=${ANALYTICS_MONGODB_URI}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+      - EUREKA_INSTANCE_HOSTNAME=${ANALYTICS_SERVICE_INSTANCE_HOSTNAME}
+      - EUREKA_INSTANCE_PORT=${ANALYTICS_SERVICE_INSTANCE_PORT}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+    healthcheck:
+      test: curl --fail http://localhost:${ANALYTICS_SERVICE_INSTANCE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-analytics:
+    image: mongo
+    container_name: ${ANALYTICS_MONGODB_HOST}
+    ports:
+      - "27021:${MONGODB_DEFAULT_PORT}"
+    volumes:
+      - mongo-analytics-data:${MONGODB_VOLUME_PATH}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+
+
+  ########################
+  # EMBEDDED SERVICE     #
+  ########################
+  embedded-service:
+    build: ./embedded-service
+    container_name: ${EMBEDDED_SERVICE_INSTANCE_HOSTNAME}
+    ports:
+      - "${EMBEDDED_SERVICE_INSTANCE_PORT}:${EMBEDDED_SERVICE_INSTANCE_PORT}"
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+      mongo-embedded:
+        condition: service_started
+    environment:
+      - SPRING_DATA_MONGODB_URI=${EMBEDDED_MONGODB_URI}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+    healthcheck:
+      test: curl --fail http://localhost:${EMBEDDED_SERVICE_INSTANCE_PORT}/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-embedded:
+    image: mongo
+    container_name: ${EMBEDDED_MONGODB_HOST}
+    ports:
+      - "27022:${MONGODB_DEFAULT_PORT}"
+    volumes:
+      - mongo-embedded-data:${MONGODB_VOLUME_PATH}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+
+
+  #####################
+  # PROMETHEUS        #
+  #####################
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ${PROMETHEUS_INSTANCE_HOSTNAME}
+    ports:
+      - "${PROMETHEUS_INSTANCE_PORT}:${PROMETHEUS_INSTANCE_PORT}"
+    networks:
+      - ${SMARTPARKING_NETWORK}
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      gateway:
+        condition: service_healthy
+
+
+  #####################
+  # GRAFANA           #
+  #####################
+  grafana:
+    image: grafana/grafana
+    container_name: ${GRAFANA_INSTANCE_HOSTNAME}
+    ports:
+      - "${GRAFANA_INSTANCE_PORT}:${GRAFANA_INSTANCE_PORT}"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    networks:
+      - ${SMARTPARKING_NETWORK}
+    depends_on:
+      - prometheus
+
+
+#############################
+# VOLUMES AND NETWORKS      #
+#############################
+volumes:
+  mongo-auth-data:
+  mongo-parking-data:
+  mongo-payment-data:
+  mongo-ticketing-data:
+  mongo-analytics-data:
+  mongo-embedded-data:
+
+networks:
+  smartparking-net:
+    driver: bridge

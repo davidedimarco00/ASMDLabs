@@ -1,0 +1,12 @@
+rootProject.name = 'smart-parking-backend'
+
+include 'analytics-service'
+include 'service-discovery'
+include 'auth-service'
+include 'payment-service'
+include 'embedded-service'
+include 'parking-service'
+include 'ticketing-service'
+include 'gateway'
+
+include 'e2e'

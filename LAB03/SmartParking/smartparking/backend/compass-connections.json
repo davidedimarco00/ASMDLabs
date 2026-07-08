@@ -1,0 +1,116 @@
+{
+  "type": "Compass Connections",
+  "version": {
+    "$numberInt": "1"
+  },
+  "connections": [
+    {
+      "id": "04bd9751-5692-4c5e-9389-58551162d295",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1762016465554"
+        }
+      },
+      "favorite": {
+        "name": "mongo-auth"
+      },
+      "savedConnectionType": "recent",
+      "connectionOptions": {
+        "connectionString": "mongodb://localhost:27017/",
+        "oidc": {
+          "serializedState": "eyJvaWRjUGx1Z2luU3RhdGVWZXJzaW9uIjoxLCJzdGF0ZSI6W119"
+        }
+      }
+    },
+    {
+      "id": "0d0668ac-d4c6-4cf9-af7a-dacdc64b01dd",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1762016361475"
+        }
+      },
+      "favorite": {
+        "name": "mongo-parking"
+      },
+      "savedConnectionType": "recent",
+      "connectionOptions": {
+        "connectionString": "mongodb://localhost:27018/",
+        "oidc": {
+          "serializedState": "eyJvaWRjUGx1Z2luU3RhdGVWZXJzaW9uIjoxLCJzdGF0ZSI6W119"
+        }
+      }
+    },
+    {
+      "id": "8bf8c3bd-8d2f-41fc-be82-b69c46eea361",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1762016481399"
+        }
+      },
+      "favorite": {
+        "name": "mongo-ticketing"
+      },
+      "savedConnectionType": "recent",
+      "connectionOptions": {
+        "connectionString": "mongodb://localhost:27020/",
+        "oidc": {
+          "serializedState": "eyJvaWRjUGx1Z2luU3RhdGVWZXJzaW9uIjoxLCJzdGF0ZSI6W119"
+        }
+      }
+    },
+    {
+      "id": "a561af4d-4449-4ca3-9866-2f8daf8020ca",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1762016418916"
+        }
+      },
+      "favorite": {
+        "name": "mongo-payment"
+      },
+      "savedConnectionType": "recent",
+      "connectionOptions": {
+        "connectionString": "mongodb://localhost:27019/",
+        "oidc": {
+          "serializedState": "eyJvaWRjUGx1Z2luU3RhdGVWZXJzaW9uIjoxLCJzdGF0ZSI6W119"
+        }
+      }
+    },
+    {
+      "id": "bd558bd9-39a8-4c2c-93bb-2da2b091f94a",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1762016447026"
+        }
+      },
+      "favorite": {
+        "name": "mongo-embedded"
+      },
+      "savedConnectionType": "recent",
+      "connectionOptions": {
+        "connectionString": "mongodb://localhost:27022/",
+        "oidc": {
+          "serializedState": "eyJvaWRjUGx1Z2luU3RhdGVWZXJzaW9uIjoxLCJzdGF0ZSI6W119"
+        }
+      }
+    },
+    {
+      "id": "e77e27bf-eeb5-4366-9f49-3e0156f451d4",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1762016397399"
+        }
+      },
+      "favorite": {
+        "name": "mongo-analytics"
+      },
+      "savedConnectionType": "recent",
+      "connectionOptions": {
+        "connectionString": "mongodb://localhost:27021/",
+        "oidc": {
+          "serializedState": "eyJvaWRjUGx1Z2luU3RhdGVWZXJzaW9uIjoxLCJzdGF0ZSI6W119"
+        }
+      }
+    }
+  ]
+}

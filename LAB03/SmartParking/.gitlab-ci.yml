@@ -1,0 +1,64 @@
+stages:
+  - build
+  - deploy-infra
+  - e2e-test
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+# -----------------------------------------------------------
+# 1) BUILD DI TUTTE LE IMMAGINI DEI MICROSERVIZI
+# -----------------------------------------------------------
+build-images:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "🏗 Building all microservice images"
+    - docker build -t service-discovery ./smartparking/backend/service-discovery
+    - docker build -t gateway ./smartparking/backend/gateway
+    - docker build -t auth-service ./smartparking/backend/auth-service
+    - docker build -t parking-service ./smartparking/backend/parking-service
+    - docker build -t embedded-service ./smartparking/backend/embedded-service
+    - docker build -t ticketing-service ./smartparking/backend/ticketing-service
+    - docker build -t payment-service ./smartparking/backend/payment-service
+    - docker build -t analytics-service ./smartparking/backend/analytics-service
+
+# -----------------------------------------------------------
+# 2) AVVIO INFRASTRUTTURA COMPLETA (EUREKA + MONGO + SERVIZI)
+# -----------------------------------------------------------
+deploy-infra:
+  stage: deploy-infra
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "🚀 Starting SmartParking infra"
+    - cd smartparking/backend
+    - ls -l
+    - docker compose up -d
+    - echo "⏳ Waiting for services..."
+    - sleep 45
+  artifacts:
+    reports:
+      dotenv: infra.env
+
+
+e2e-test:
+  stage: e2e-test
+  image: gradle:7.6.0-jdk17
+  services:
+    - docker:dind
+  script:
+    - cd smartparking/backend
+    - gradle :e2e:test --info
+  dependencies:
+    - deploy-infra
+
+
+
+  when: always
+  script:
+    - echo "🧹 Cleaning up Docker Compose environment"
+    - docker compose down -v || true

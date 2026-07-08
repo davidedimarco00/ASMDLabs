@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tickets Viewer - SmartParking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .ticket-list {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .ticket-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.07);
+        }
+        .ticket-item:last-child {
+            border-bottom: none;
+        }
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 5px 20px rgba(23,162,184,0.5);
+            font-size: 30px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .refresh-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(23,162,184,0.7);
+        }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            padding: 10px 14px;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 18px;
+            color: #667eea;
+        }
+        @media (max-width: 900px) {
+            .row-cols-2 > .col {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<a href="/dashboard" class="btn btn-light back-btn" aria-label="Torna alla dashboard" title="Torna alla dashboard">
+    <i class="bi bi-arrow-left-circle me-2"></i>
+    <span class="d-none d-sm-inline">Dashboard</span>
+</a>
+<div class="container mt-5">
+    <div class="card p-4">
+        <h1 class="mb-4 text-center">
+            <i class="bi bi-ticket-perforated text-primary"></i>
+            Tickets Viewer
+        </h1>
+        <div class="row row-cols-2 g-4">
+            <div class="col">
+                <div class="section-title"><i class="bi bi-list-ul"></i> Tickets Attivi</div>
+                <div class="mb-2">
+                    <select id="activeOrder" class="form-select form-select-sm" onchange="refreshTickets()">
+                        <option value="desc">Dal più recente</option>
+                        <option value="asc">Dal meno recente</option>
+                    </select>
+                </div>
+                <div id="activeTickets" class="ticket-list"></div>
+            </div>
+            <div class="col">
+                <div class="section-title"><i class="bi bi-clock-history"></i> Tickets Storici</div>
+                <div class="mb-2">
+                    <select id="historyOrder" class="form-select form-select-sm" onchange="refreshTickets()">
+                        <option value="desc">Dal più recente</option>
+                        <option value="asc">Dal meno recente</option>
+                    </select>
+                </div>
+                <div id="historyTickets" class="ticket-list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<button class="refresh-btn" onclick="refreshTickets()" title="Aggiorna">
+    <i class="bi bi-arrow-clockwise"></i>
+</button>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+        async function fetchTickets(endpoint, containerId, order, dateField) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+            try {
+                const response = await fetch(endpoint);
+                if (!response.ok) throw new Error('Errore');
+                const data = await response.json();
+                const tickets = data.map?.tickets?.list || [];
+                if (tickets.length === 0) {
+                    container.innerHTML = '<div class="text-muted text-center py-4">Nessun ticket trovato</div>';
+                    return;
+                }
+                tickets.sort((a, b) => {
+                    const da = new Date(a.map[dateField] || 0);
+                    const db = new Date(b.map[dateField] || 0);
+                    return order === 'asc' ? da - db : db - da;
+                });
+                container.innerHTML = tickets.map(t => renderTicket(t.map)).join('');
+            } catch (e) {
+                container.innerHTML = '<div class="alert alert-danger">Errore nel caricamento</div>';
+            }
+        }
+
+
+        function renderTicket(t) {
+            if (!t) return '';
+            return `
+                <div class="ticket-item">
+                    <div><strong>Tipo:</strong> ${t.type || '-'}</div>
+                    <div><strong>Targa:</strong> ${t.associatedWithPlate || '-'}</div>
+                    <div><strong>Status:</strong> ${t.status || '-'}</div>
+                    <div><strong>Creato il:</strong> ${t.createdAt || '-'}</div>
+                    ${t.historyAddedAt ? `<div><strong>Completato il:</strong> ${t.historyAddedAt}</div>` : ''}
+                    ${t.fee ? `<div><strong>Totale:</strong> €${t.fee}</div>` : ''}
+                </div>
+            `;
+        }
+        function refreshTickets() {
+            const activeOrder = document.getElementById('activeOrder').value;
+            const historyOrder = document.getElementById('historyOrder').value;
+
+            fetchTickets('/api/ticketing/getAllTickets', 'activeTickets', activeOrder, 'createdAt');
+            fetchTickets('/api/ticketing/getAllHistoryTickets', 'historyTickets', historyOrder, 'historyAddedAt');
+        }
+        document.addEventListener('DOMContentLoaded', refreshTickets);
+</script>
+</body>
+</html>
