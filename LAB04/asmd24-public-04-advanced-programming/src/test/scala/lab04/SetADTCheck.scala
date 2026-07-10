@@ -1,6 +1,6 @@
 package scala.lab04
 
-import org.scalacheck.Prop.forAll
+import org.scalacheck.Prop.{forAll, propBoolean}
 import org.scalacheck.{Arbitrary, Gen, Properties}
 
 import scala.lab04.SetADTs.{BasicSetADT, SetADT}
@@ -47,12 +47,36 @@ abstract class SetADTCheck(name: String) extends Properties(name):
  * axioms defining union and remove:
  * union(empty, s) = s
  * union(add(x, s2), s) = add(x, union(s2, s)
+ *
+ *
  * remove(x, empty) = empty
  * remove(x, add(x, s)) = remove(x, s)
  * remove(x, add(y, s)) = add(y, remove(x, s)) if x!=y
  *
  * and so on: write axioms and correspondingly implement checks
  */
+
+  property("axioms for union") =
+    forAll: (s1: Set[Int], s2: Set[Int], x: Int) =>
+      (s1 || empty()) === s1 &&
+      (empty() || s2) === s2 &&
+      (s1.add(x) || s2) === (s1 || s2).add(x)
+
+  property("axioms for remove") =
+  // remove(x, empty) = empty
+    forAll: (x: Int) =>
+      empty[Int]().remove(x) === empty()
+  &&
+  // remove(x, add(x, s)) = remove(x, s)
+  forAll: (s: Set[Int], x: Int) =>
+    s.add(x).remove(x) === s.remove(x)
+  &&
+    // remove(x, add(y, s)) = add(y, remove(x, s))  if x != y
+    forAll: (s: Set[Int], x: Int, y: Int) =>
+      (x != y) ==> (s.add(y).remove(x) === s.remove(x).add(y))
+      
+  
+
 
 
 object BasicSetADTCheck extends SetADTCheck("SequenceBased Set"):
