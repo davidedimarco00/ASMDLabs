@@ -1,0 +1,26 @@
+ThisBuild / version := "0.1.0-SNAPSHOT"
+
+ThisBuild / scalaVersion := "3.3.5"
+
+lazy val root = (project in file("."))
+  .settings(
+    name := "asmd-public-12-llm-intro-code",
+    libraryDependencies += "dev.langchain4j" % "langchain4j" % "1.15.0",
+      libraryDependencies += "dev.langchain4j" % "langchain4j-agentic" % "1.15.0-beta25",
+    libraryDependencies += "dev.langchain4j" % "langchain4j-ollama" % "1.15.0",
+    libraryDependencies += "dev.langchain4j" % "langchain4j-google-ai-gemini" % "1.15.0",
+
+    libraryDependencies += "com.github.haifengl" %% "smile-scala" % "4.3.0",
+    libraryDependencies += "com.github.haifengl" %% "smile-scala" % "4.3.0",
+    libraryDependencies += "com.github.haifengl" % "smile-plot" % "4.3.0",
+    libraryDependencies += "net.aichler" % "jupiter-interface" % "0.11.1" % Test,
+    libraryDependencies += "org.junit.jupiter" % "junit-jupiter-api" % "5.10.2" % Test,
+    libraryDependencies += "org.junit.jupiter" % "junit-jupiter-engine" % "5.10.2" % Test,
+    libraryDependencies += "org.mockito" % "mockito-core" % "5.11.0" % Test,
+    libraryDependencies += "org.mockito" % "mockito-junit-jupiter" % "5.11.0" % Test,
+    libraryDependencies += "com.google.code.gson" % "gson" % "2.13.2",
+
+    // Add a concrete SLF4J binding so SLF4J doesn't default to NOP at runtime.
+    // Using Logback (compatible with SLF4J 2.x). Keep it in Runtime scope.
+    libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.4.11" % Runtime
+  )

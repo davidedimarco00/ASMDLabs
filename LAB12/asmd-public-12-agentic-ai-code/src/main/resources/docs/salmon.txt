@@ -1,0 +1,54 @@
+The Atlantic salmon (Salmo salar) is a species of ray-finned fish in the family Salmonidae. It is one of the most famous and culturally significant migratory fish in the world, renowned for its spectacular upstream leaps, complex life cycle, and high economic importance in both commercial fisheries and global aquaculture.
+
+Distribution and Habitat
+Range
+The Atlantic salmon is native to the cold waters of the North Atlantic Ocean and the rivers that drain into it. Its native range in Europe extends from the Arctic rivers of northwestern Russia, Scandinavia, and Iceland, down through the British Isles, France, and northern Spain. In North America, its historical range spanned from northern Canada (Quebec, Newfoundland, Labrador) south to the Connecticut River in the United States. During their marine phase, Atlantic salmon from both North America and Europe migrate to rich pelagic feeding grounds in the sub-Arctic waters off West Greenland, Jan Mayen, and the Faroe Islands.
+
+Habitat
+As an anadromous species, the Atlantic salmon utilizes both freshwater and marine habitats. Spawning, egg incubation, and early juvenile stages take place in clean, cool, fast-flowing freshwater rivers and streams with gravelly beds and high dissolved oxygen levels. As they mature, the juveniles undergo physiological adaptations (smoltification) to migrate downstream into the marine environment. In the ocean, they occupy pelagic waters, hunting near the surface in sub-Arctic zones before returning to their natal rivers to spawn.
+
+Life Cycle and Stages
+The Atlantic salmon has a fascinating and complex series of life stages, each marked by morphological and behavioral transitions:
+1. Egg (Roe): Laid in late autumn in gravel nests (redds) excavated by the female in freshwater streams.
+2. Alevin: Hatches in late winter or early spring. They remain buried in the gravel, feeding on their attached yolk sacs.
+3. Fry: Emerges from the gravel once the yolk sac is absorbed, beginning to feed actively on tiny aquatic invertebrates.
+4. Parr: Develops vertical camouflage markings (parr marks) to blend into the stream bed. They remain in the river for 1 to 4 years, depending on latitude and water temperature.
+5. Smolt: Undergoes "smoltification," during which they lose their parr marks, turn silver, and adapt their kidneys and gills to tolerate saltwater. They migrate downstream to the ocean in spring.
+6. Post-Smolt / Adult: Spends 1 to 3 years rapidly growing in the North Atlantic.
+7. Grilse / Multi-Sea-Winter (MSW) Salmon: Salmon returning to spawn after one winter at sea are called grilse, while those staying longer are MSW salmon.
+8. Kelt: After spawning, salmon are physically exhausted. Unlike Pacific salmon, which always die after spawning, some Atlantic salmon (kelts) survive, return to the ocean, and can spawn again in subsequent years.
+
+Description
+The Atlantic salmon has a sleek, streamlined, torpedo-shaped body adapted for efficient long-distance swimming. In the ocean, adult salmon have a silvery coloration on their sides, a dark blue-green back, and a white belly, with sparse black spots on their upper body. This countershading provides excellent camouflage in open water. 
+When they re-enter freshwater rivers to breed, their appearance changes dramatically. Both sexes lose their silver sheen, turning reddish-brown or bronze. Males develop a prominent hooked lower jaw, known as a "kype," and highly elongated teeth used in territorial combat.
+The size of Atlantic salmon varies greatly. Returning grilse may weigh 1.5 to 3.5 kg, while multi-sea-winter adults typically range from 5 to 12 kg and measure 70 to 100 cm. Exceptional specimens can exceed 150 cm in length and weigh over 30 kg.
+
+Biology and Behavior
+Homing Instinct
+One of the most remarkable behaviors of the Atlantic salmon is its precise homing instinct. Guided by a combination of geomagnetic navigation in the open ocean and olfactory (scent) cues as they approach the coast, adult salmon are able to find and return to the exact freshwater stream where they hatched years earlier.
+
+Diet
+The diet of the Atlantic salmon changes completely across its life stages:
+- In fresh water, fry and parr feed on aquatic insect larvae (such as mayflies, caddisflies, and stoneflies), small crustaceans, and terrestrial insects that fall onto the water's surface.
+- In the ocean, adult salmon are active pelagic predators, feeding voraciously on krill, amphipods, squid, and small schooling fish such as capelin, sand eels, herring, and sprat. This marine diet, rich in carotenoid pigments from shrimp and krill, gives salmon flesh its characteristic pink-orange color.
+- Upon entering fresh water for their spawning run, adult salmon cease feeding entirely, relying solely on fat and muscle reserves built up during their marine phase to sustain their upstream journey and egg production.
+
+Reproduction
+Spawning takes place in late autumn (October to January). The female selects a shallow, fast-flowing riffle with clean gravel and uses her tail to excavate a depression in the riverbed called a "redd." As she releases her eggs, one or more dominant males (or tiny sexually mature "precocious male parr" that have never left the river) fertilize them. The female then swims slightly upstream to excavate another nest, covering the fertilized eggs with gravel from the new excavation. A single female can lay between 5,000 and 15,000 eggs.
+
+Fishing and Aquaculture
+Sport Fishing
+The Atlantic salmon is regarded as the "King of Fish" by recreational anglers. It is one of the premier targets for fly fishing, prized for its strength, acrobatics, and the extreme challenge of coaxing a non-feeding adult to strike a fly. Famous salmon rivers in Norway, Scotland, Canada (such as the Miramichi), and Russia (the Kola Peninsula) attract anglers from all over the globe.
+
+Commercial Fishing and Aquaculture
+Historically, wild Atlantic salmon were harvested in massive quantities using drift nets and traps. Today, due to severe wild population declines, commercial fishing of wild Atlantic salmon is heavily restricted or banned in most areas.
+To meet global demand, a massive aquaculture industry developed, beginning in the late 1960s in Norway and Scotland. Today, over 2 million tons of Atlantic salmon are farmed annually, primarily in Norway, Chile, Scotland, Canada, and the Faroe Islands. Farmed salmon are raised in freshwater hatcheries as smolts and then transferred to large open-net sea cages in sheltered fjords and bays, where they are fed high-protein pellets until they reach commercial size (4–6 kg).
+
+Threats and Conservation
+Wild Atlantic salmon populations have declined precipitously since the 1970s. Key threats include:
+1. River Obstructions: Dams, weirs, and culverts block access to essential spawning grounds. While fish ladders are increasingly installed, they do not fully eliminate the barrier.
+2. Aquaculture Impacts: Open-net sea cages can spread sea lice (Lepeophtheirus salmonis) and infectious diseases to wild salmon migrating past the cages. Additionally, escaped farmed salmon can interbreed with wild stocks, diluting the genetic adaptations of local populations.
+3. Overfishing and Climate Change: Historical overfishing depleted ocean stocks. Today, rising ocean temperatures and changes in currents, driven by climate change, are altering the distribution of prey species, leading to higher marine mortality.
+4. Pollution and Habitat Degradation: Acid rain, agricultural runoff, and siltation from forestry can smother eggs in redds and degrade freshwater habitat quality.
+
+Numerous conservation organizations, such as the Atlantic Salmon Federation (ASF) and the North Atlantic Salmon Conservation Organization (NASCO), work to restore wild populations by removing obsolete dams, regulating marine fisheries, restoring river habitats, and advocating for land-based closed-containment fish farming.
