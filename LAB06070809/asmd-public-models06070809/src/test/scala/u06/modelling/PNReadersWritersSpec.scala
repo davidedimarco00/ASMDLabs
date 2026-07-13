@@ -242,3 +242,4 @@ class PNReadersWritersSpec extends AnyFunSuite:
             m1(P5) shouldBe m2(P5) // Mutex unchanged
         case _ => // ignore
 
+

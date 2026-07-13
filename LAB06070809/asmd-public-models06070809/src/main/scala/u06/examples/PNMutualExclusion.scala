@@ -1,6 +1,6 @@
 package u06.examples
 
-export u06.modelling.PetriNet
+
 import u06.utils.MSet
 
 object PNMutualExclusion:
