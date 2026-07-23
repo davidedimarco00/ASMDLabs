@@ -11,7 +11,7 @@ abstract class SetADTCheck(name: String) extends Properties(name):
 
   // generating a small Int
   def smallInt(): Gen[Int] = Gen.choose(0, 10)
-  // generating a Set of Int with approximate size (modulo clashes)
+  // generating a Set of Int with approximate size
   def setGen[A: Arbitrary](size: Int): Gen[Set[A]] =
     if size == 0
       then Gen.const(empty())
