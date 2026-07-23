@@ -8,8 +8,8 @@ object TryQMatrix extends App :
   import u09.model.QMatrix.*
 
   val rl: QMatrix.Facade = Facade(
-    width = 5,
-    height = 5,
+    width = 10,
+    height = 10,
     initial = (0,0),
     terminal = {case _=>false},
     reward = { case ((1,0),_) => 10; case ((3,0),_) => 5; case _ => 0},

@@ -10,6 +10,8 @@ object QMatrix:
 
   import Move.*
 
+
+  //change environment adding obstacles and penalty
   case class Facade(
                      width: Int,
                      height: Int,
@@ -17,6 +19,7 @@ object QMatrix:
                      terminal: PartialFunction[Node, Boolean],
                      reward: PartialFunction[(Node, Move), Double],
                      jumps: PartialFunction[(Node, Move), Node],
+                     obstacles: Set[Node] = Set.empty,
                      gamma: Double,
                      alpha: Double,
                      epsilon: Double = 0.0,
@@ -33,7 +36,11 @@ object QMatrix:
           case ((n1, n2), RIGHT) => ((n1 + 1) min (width - 1), n2)
           case _ => ???
         // computes rewards, and possibly a jump
-        (reward.apply((s, a)), jumps.orElse[(Node, Move), Node](_ => n2)(s, a))
+        if obstacles.contains(n2) then
+          (-1.0, s)
+        else
+          (reward.apply((s, a)), jumps.orElse[(Node, Move), Node](_ => n2)(s, a))
+
 
     def qFunction = QFunction(Move.values.toSet, v0, terminal)
     def qSystem = QSystem(environment = qEnvironment(), initial, terminal)
@@ -45,3 +52,15 @@ object QMatrix:
         col <- 0 until height
       yield formatString.format(v((col, row))) + (if (col == height - 1) "\n" else "\t"))
         .mkString("")
+
+    def showEnvironment(rl: QMatrix.Facade): String =
+      rl.show(
+        (s: QMatrix.Node) =>
+          if s == rl.initial then "S"
+          else if rl.terminal.applyOrElse(s, (_: QMatrix.Node) => false) then "T"
+          else if rl.obstacles.contains(s) then "X"
+          else ".",
+        "%3s"
+      )
+
+    
