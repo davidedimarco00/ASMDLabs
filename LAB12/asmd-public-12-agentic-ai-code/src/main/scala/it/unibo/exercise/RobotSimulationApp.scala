@@ -82,7 +82,6 @@ def runRobotSimulation(): Unit =
   // TODO: 3. Bind the environment to your tools helper
   val tools = new RobotTools(env)
   // TODO: 4. Build the AI Service with tools and memory window
-  
   val chatMemory = MessageWindowChatMemory.withMaxMessages(20)
   val robotAgent: RobotAgent = AiServices.builder(classOf[RobotAgent])
     .chatModel(model)
@@ -103,35 +102,35 @@ def runRobotSimulation(): Unit =
     
     // Save state before action
     val stateBefore = env.robot.state
-    println(s"📍 State BEFORE: Pos=${stateBefore.position}, Holding=${stateBefore.holdingObject}")
+    println(s"State BEFORE: Pos=${stateBefore.position}, Holding=${stateBefore.holdingObject}")
     println("\nGrid:")
     println(env.printGrid())
     
     // TODO: 6. Invoke the agent passing the current state.
     try {
       val agentResponse = robotAgent.next(env.robot.state)
-      println(s"\n🤖 Agent Response: $agentResponse")
+      println(s"\nAgent Response: $agentResponse")
     } catch {
       case e: Exception =>
-        println(s"❌ Agent Error: ${e.getMessage}")
+        println(s"Agent Error: ${e.getMessage}")
         e.printStackTrace()
     }
     
     // Show state after action
     val stateAfter = env.robot.state
-    println(s"\n📍 State AFTER: Pos=${stateAfter.position}, Holding=${stateAfter.holdingObject}")
+    println(s"\nState AFTER: Pos=${stateAfter.position}, Holding=${stateAfter.holdingObject}")
     
     // Show what changed
     if (stateBefore.position != stateAfter.position) {
-      println(s"  ✓ Position changed: ${stateBefore.position} → ${stateAfter.position}")
+      println(s"Position changed: ${stateBefore.position} → ${stateAfter.position}")
     }
     if (stateBefore.holdingObject != stateAfter.holdingObject) {
-      println(s"  ✓ Holding changed: ${stateBefore.holdingObject} → ${stateAfter.holdingObject}")
+      println(s"Holding changed: ${stateBefore.holdingObject} → ${stateAfter.holdingObject}")
     }
     
     // Check if goal reached
     if (env.isGoalReached) {
-      println("\n🎯 GOAL REACHED!")
+      println("\nGOAL REACHED!")
     }
     
     // Brief sleep to visualize the progress smoothly
@@ -140,11 +139,10 @@ def runRobotSimulation(): Unit =
 
   println("\n==========================================================")
   if (env.isGoalReached)
-    println("🎉 GOAL REACHED! The robot arrived safely at the goal position (3.0, 3.0)!")
+    println("GOAL REACHED! The robot arrived safely at the goal position (3.0, 3.0)!")
   else
-    println("❌ SIMULATION STOPPED / TIMEOUT.")
+    println("SIMULATION STOPPED / TIMEOUT.")
   println("==========================================================")
   println("Final Environment State:")
   println(env.printGrid())
-  println("Exercise setup complete! Ready for your implementation.")
 
