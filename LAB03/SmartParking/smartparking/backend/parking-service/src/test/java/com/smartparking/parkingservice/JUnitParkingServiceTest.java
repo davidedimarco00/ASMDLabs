@@ -27,7 +27,7 @@ class JUnitParkingServiceTest {
             MongoDatabase db = client.getDatabase(dbName);
             MongoCollection<Document> collection = db.getCollection(collectionName);
             collection.deleteMany(new Document());
-            System.out.println("🔥 Mongo ParkingService cleaned BEFORE ALL tests.");
+            System.out.println("Mongo ParkingService cleaned BEFORE ALL tests.");
         }
     }
 

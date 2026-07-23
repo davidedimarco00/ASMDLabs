@@ -100,6 +100,9 @@ services:
     environment:
       - SPRING_DATA_MONGODB_URI=${PARKING_MONGODB_URI}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+      - OLLAMA_BASE_URL=http://ollama:11434 #messo cosi perchè ce lho installato anche sul pc
+      - OLLAMA_MODEL_NAME=llama3.2:3b
+      - OLLAMA_TIMEOUT_SECONDS=120
     networks:
       - ${SMARTPARKING_NETWORK}
     healthcheck:
@@ -108,6 +111,8 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+
+
 
   mongo-parking:
     image: mongo
@@ -118,6 +123,22 @@ services:
       - mongo-parking-data:${MONGODB_VOLUME_PATH}
     networks:
       - ${SMARTPARKING_NETWORK}
+
+    #####################
+    # OLLAMA  #
+    #####################
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: smartparking-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - ${SMARTPARKING_NETWORK}
+
+
 
 
   #####################
@@ -312,6 +333,7 @@ volumes:
   mongo-ticketing-data:
   mongo-analytics-data:
   mongo-embedded-data:
+  ollama-data:
 
 networks:
   smartparking-net:

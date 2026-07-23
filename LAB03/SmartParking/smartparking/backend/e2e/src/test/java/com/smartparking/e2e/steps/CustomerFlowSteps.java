@@ -24,17 +24,17 @@ public class CustomerFlowSteps {
     private String virtualTicketId;
     private double calculatedFee;
 
-    @Before
-    public void beforeScenario() {
-        try {
-            System.out.println("[DEBUG] Reset: remove test car if exists");
-            JsonObject req = new JsonObject().put("plate", "TEST");
-            postJsonAndWait(gatewayUrl + "/parking-service/removeCar", req, true);
-        } catch (Exception e) {
-            System.out.println("[DEBUG] Reset: No car to be removed or ignored error: " + e.getMessage());
-        }
-        obtainToken();
-    }
+//    @Before
+//    public void beforeScenario() {
+//        try {
+//            System.out.println("[DEBUG] Reset: remove test car if exists");
+//            JsonObject req = new JsonObject().put("plate", "TEST");
+//            postJsonAndWait(gatewayUrl + "/parking-service/removeCar", req, true);
+//        } catch (Exception e) {
+//            System.out.println("[DEBUG] Reset: No car to be removed or ignored error: " + e.getMessage());
+//        }
+//        obtainToken();
+//    }
 
     @Given("The car with license plate {string} arrives at the parking lot")
     public void the_car_with_license_plate_arrives_at_the_parking_lot(String plate) {

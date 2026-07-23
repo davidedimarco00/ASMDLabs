@@ -7,6 +7,7 @@ import com.smartparking.parkingservice.application.ports.ParkingServiceAPI;
 import com.smartparking.parkingservice.application.ports.ParkingServiceRepository;
 import com.smartparking.parkingservice.infrastracture.persistence.ParkingRepositoryImpl;
 
+import com.smartparking.parkingservice.llm.service.LlmParkingDecisionService;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,6 @@ public class ParkingServiceApp {
     public ParkingServiceAPI parkingServiceAPI(ParkingServiceRepository repository) {
         return new ParkingServiceApiImpl(repository);
     }
-
 
 
 

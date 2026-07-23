@@ -5,7 +5,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.HttpResponse;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AdminFlowSteps {
